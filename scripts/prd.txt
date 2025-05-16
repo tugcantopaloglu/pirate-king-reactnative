@@ -1,0 +1,110 @@
+<context>
+# Overview  
+SkullKing Mobile is a digital adaptation of the beloved pirate‑themed trick‑taking card game. It solves the problem of limited physical availability by allowing players to enjoy the full SkullKing experience anywhere, anytime. The app targets casual mobile gamers, board‑game enthusiasts, and competitive card‑game lovers, providing a convenient and engaging way to play with friends or strangers while preserving the original game’s strategic depth.
+
+# Core Features  
+- **Local Pass & Play**  
+  *What it does:* Lets 2‑6 players play on one device by passing it around.  
+  *Why it's important:* Delivers an instant offline experience without accounts or internet.  
+  *How it works at a high level:* The app hides hands between turns and prompts the next player, keeping score locally.  
+
+- **Online Multiplayer & Matchmaking**  
+  *What it does:* Enables real‑time games with friends (private rooms) or ranked public matches.  
+  *Why it's important:* Drives engagement, fosters community, and supports competitive play.  
+  *How it works at a high level:* A WebSocket server maintains authoritative game state; clients sync via socket events, with ELO‑based matchmaking.  
+
+- **Interactive Tutorial & Rulebook**  
+  *What it does:* Guides new players through bidding, trick‑taking, and scoring.  
+  *Why it's important:* Lowers the learning curve and improves retention.  
+  *How it works at a high level:* A scripted demo with tooltips and highlighted UI elements; an embedded markdown rulebook for quick reference.  
+
+- **Leaderboards & Achievements**  
+  *What it does:* Tracks wins, win‑rate, and unique challenges, rewarding badges.  
+  *Why it's important:* Encourages long‑term play and competition.  
+  *How it works at a high level:* Server aggregates stats after each match; client pulls leaderboard via REST.  
+
+- **Customization & Theming**  
+  *What it does:* Offers alternate card backs, table skins, and avatars (free & premium).  
+  *Why it's important:* Boosts personalization and optional monetization.  
+  *How it works at a high level:* Cosmetic asset packs stored in CDN; selections saved in user profile.
+
+# User Experience  
+- **User personas**  
+  *Casual Gamer Ceren* – plays quick matches during commutes.  
+  *Board‑Game Fan Batu* – loves pass‑and‑play sessions with family.  
+  *Competitive Player Alex* – climbs the ranked ladder and tracks stats.  
+
+- **Key user flows**  
+  1. Open app ➜ Quick Match ➜ Autocomplete lobby ➜ Play ➜ Results & rematch.  
+  2. Open app ➜ Invite friends ➜ Private room ➜ Start game ➜ Post‑game chat.  
+  3. Open app ➜ Learn ➜ Interactive tutorial ➜ First solo round ➜ Ready for multiplayer.  
+
+- **UI/UX considerations**  
+  * One‑hand portrait mode with drag & drop card play.  
+  * Clear bid and trick indicators, pirate‑themed animations.  
+  * Color‑blind friendly palette and scalable typography.
+</context>
+
+<PRD>
+# Technical Architecture  
+- **System components**  
+  *Mobile Client:* React Native (Android & iOS).  
+  *Game Server:* Node.js + Express with Socket.IO.  
+  *Database:* PostgreSQL for persistence; Redis for sessions/pub‑sub.  
+  *Authentication:* JWT (email & social OAuth).  
+
+- **Data models**  
+  *User:* id, username, email, avatar, stats.  
+  *Game:* id, playerIds[], status, round, scores[], createdAt.  
+  *Hand:* gameId, playerId, cards[], bid.  
+  *Leaderboard:* userId, rating, wins, losses.  
+
+- **APIs and integrations**  
+  *REST:* /auth, /users, /games, /leaderboards.  
+  *WebSocket events:* joinRoom, startGame, makeBid, playCard, roundResult, gameOver.  
+  *Integrations:* Firebase Analytics, optional AdMob for monetization.  
+
+- **Infrastructure requirements**  
+  *Hosting:* AWS (EC2 or ECS Fargate).  
+  *CI/CD:* GitHub Actions – test, build, deploy.  
+  *Monitoring:* CloudWatch & Sentry for error tracking.  
+
+# Development Roadmap  
+- **Phase 1 – MVP**  
+  * Core game engine (bidding, trick resolution, scoring).  
+  * Local Pass & Play with basic UI.  
+  * Static tutorial & rulebook.  
+
+- **Phase 2 – Online Multiplayer**  
+  * Real‑time WebSocket connectivity.  
+  * Public & private matchmaking.  
+  * Account creation & profiles.  
+
+- **Phase 3 – Social & Retention**  
+  * Leaderboards and achievements.  
+  * Push notifications for invitations and turns.  
+
+- **Phase 4 – Monetization & Polish**  
+  * Cosmetic store & ad‑free purchase.  
+  * Performance optimization, localization, and accessibility tweaks.  
+
+# Logical Dependency Chain  
+1. Project scaffolding (client & server repos).  
+2. Implement and unit‑test game engine.  
+3. Integrate engine with local UI for MVP.  
+4. Build backend services (REST + WebSocket).  
+5. Connect client to backend for online play.  
+6. Add persistence & authentication.  
+7. Layer in social features.  
+8. Enable monetization & cosmetic DLC.  
+
+# Risks and Mitigations  
+- **Latency & Desync** ➜ Authoritative server logic, client reconciliation.  
+- **Feature Creep** ➜ Strict phase gates and backlog triage.  
+- **Mobile Device Fragmentation** ➜ React Native testing matrix; performance budgets.  
+- **Security (cheating)** ➜ Validate moves server‑side; encrypted traffic; abuse monitoring.  
+
+# Appendix  
+- **Research findings**: Similar card games on mobile retain 30% D30 with asynchronous play; pirate themes test well in 18‑34 demographic.  
+- **Technical specifications**: React Native ≥0.72, Node.js 18, Postgres 14, WebSocket heartbeat 15 s.
+</PRD>
